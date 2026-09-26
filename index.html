@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>AcessMap - Acessibilidade é um direito</title>
     
-    <!-- Favicon SVG (Gerado a partir da sua logo) -->
+    <!-- Favicon SVG -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230066FF'/%3E%3Cpath d='M50 20a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM35 45v20h10v25h10V65h10V45H35z' fill='white'/%3E%3C/svg%3E">
     
     <!-- Leaflet CSS -->
@@ -18,12 +18,15 @@
 <body>
 
 <div id="app-container">
-    <!-- Cabeçalho com a Logo -->
+    <!-- Cabeçalho com a Logo e Botão de Configurações -->
     <header class="app-header">
         <div class="logo-container">
             <!-- Substitua 'logo.jpg' pelo nome do arquivo que você salvou -->
-            <img src="logo.jpg" alt="AcessMap - A acessibilidade é um direito, não um favor." class="app-logo">
+            <img src="logo.jpg" alt="AcessMap" class="app-logo">
         </div>
+        <button class="settings-btn" onclick="openSettings()" aria-label="Configurações">
+            <i class="fa-solid fa-gear"></i>
+        </button>
     </header>
 
     <!-- Área Principal (Views) -->
@@ -108,6 +111,41 @@
             <span id="nav-login-text">Login</span>
         </button>
     </nav>
+
+    <!-- Modal de Configurações -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-sliders"></i> Acessibilidade</h2>
+                <button class="close-btn" onclick="closeSettings()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="setting-item">
+                    <label>Tema do Aplicativo</label>
+                    <div class="btn-group">
+                        <button class="toggle-btn active" data-theme="dark" onclick="setTheme('dark')">Escuro</button>
+                        <button class="toggle-btn" data-theme="light" onclick="setTheme('light')">Claro</button>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Tamanho do Texto</label>
+                    <div class="btn-group">
+                        <button class="toggle-btn active" data-font="normal" onclick="setFontSize('normal')">A</button>
+                        <button class="toggle-btn" data-font="large" onclick="setFontSize('large')" style="font-size: 1.2em;">A</button>
+                        <button class="toggle-btn" data-font="xlarge" onclick="setFontSize('xlarge')" style="font-size: 1.4em;">A</button>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Alto Contraste</label>
+                    <button id="contrast-toggle" class="btn btn-outline" onclick="toggleHighContrast()">Ativar</button>
+                </div>
+                <div class="setting-item">
+                    <label>Modo Leitura Fácil</label>
+                    <button id="reading-toggle" class="btn btn-outline" onclick="toggleReadingMode()">Ativar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div id="toast-container" class="toast-container"></div>
 </div>
