@@ -21,14 +21,88 @@ button{cursor:pointer;font-family:inherit;}
 
 #app-container{width:100%;max-width:480px;height:100vh;max-height:940px;background:var(--bg);position:relative;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 10px 60px rgba(0,0,0,.9);border-radius:22px;transition:background .3s;}
 
-/* ============ HEADER COM LOGO MESCLADA ============ */
-.app-header{position:relative;height:130px;display:flex;align-items:center;justify-content:center;overflow:hidden;border-bottom:1px solid var(--border);z-index:10;}
-.header-glow{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(0,102,255,.45),transparent 70%),linear-gradient(180deg,#0A1C3A 0%,#0A1C3A 55%,var(--bg) 100%);z-index:0;}
-body[data-theme="light"] .header-glow{background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(0,102,255,.25),transparent 70%),linear-gradient(180deg,#DDE9FA 0%,#EEF3FA 100%);}
+/* ============ HEADER COM LOGO ADAPTATIVA (SVG) ============ */
+.app-header{
+  position:relative;
+  min-height:210px;
+  padding:8px 20px 4px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  border-bottom:1px solid var(--border);
+  z-index:10;
+}
+
+/* Brilho radial que se funde com a logo */
+.header-glow{
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(ellipse 65% 55% at 50% 45%, rgba(0,102,255,.45), transparent 72%),
+    radial-gradient(ellipse 40% 40% at 50% 50%, rgba(0,166,255,.22), transparent 80%),
+    linear-gradient(180deg, #0A1C3A 0%, #0A1C3A 55%, var(--bg) 100%);
+  z-index:0;
+  pointer-events:none;
+}
+body[data-theme="light"] .header-glow{
+  background:
+    radial-gradient(ellipse 65% 55% at 50% 45%, rgba(0,102,255,.20), transparent 72%),
+    linear-gradient(180deg, #DDE9FA 0%, #EEF3FA 100%);
+}
 body.high-contrast .header-glow{background:#000;}
-.app-logo{position:relative;z-index:1;height:105px;width:auto;max-width:100%;object-fit:contain;filter:drop-shadow(0 6px 25px rgba(0,102,255,.55));mask-image:radial-gradient(ellipse 75% 70% at 50% 50%,#000 55%,transparent 100%);-webkit-mask-image:radial-gradient(ellipse 75% 70% at 50% 50%,#000 55%,transparent 100%);}
-.settings-btn{position:absolute;right:14px;top:14px;z-index:2;width:40px;height:40px;border-radius:50%;background:rgba(17,34,64,.85);border:1px solid var(--border);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:17px;backdrop-filter:blur(8px);transition:var(--t);}
+
+/* Wrapper da logo SVG */
+.logo-svg-wrapper{
+  position:relative;
+  z-index:1;
+  width:100%;
+  max-width:330px;
+  color:var(--text); /* Faz o SVG herdar cor do tema */
+  filter:drop-shadow(0 6px 25px rgba(0,102,255,.45));
+  transition:var(--t);
+  animation:logoIn .8s cubic-bezier(.2,.9,.3,1.2) both;
+}
+body[data-theme="light"] .logo-svg-wrapper{
+  filter:drop-shadow(0 4px 20px rgba(0,102,255,.22));
+}
+body.high-contrast .logo-svg-wrapper{
+  filter:none;
+}
+
+.logo-svg{
+  width:100%;
+  height:auto;
+  max-height:200px;
+  display:block;
+  overflow:visible;
+}
+
+@keyframes logoIn{
+  from{opacity:0;transform:translateY(14px) scale(.94);}
+  to{opacity:1;transform:translateY(0) scale(1);}
+}
+
+.settings-btn{
+  position:absolute;
+  right:14px;
+  top:14px;
+  z-index:2;
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:rgba(17,34,64,.85);
+  border:1px solid var(--border);
+  color:var(--blue);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:17px;
+  backdrop-filter:blur(8px);
+  transition:var(--t);
+}
 .settings-btn:hover{background:var(--blue);color:#fff;transform:rotate(90deg);}
+body[data-theme="light"] .settings-btn{background:rgba(255,255,255,.9);}
 
 /* ============ MAIN/VIEWS ============ */
 main{flex:1;position:relative;overflow:hidden;}
