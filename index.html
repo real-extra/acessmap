@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AcessMap - Acessibilidade é um direito</title>
+    
+    <!-- Favicon SVG (Gerado a partir da sua logo) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230066FF'/%3E%3Cpath d='M50 20a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM35 45v20h10v25h10V65h10V45H35z' fill='white'/%3E%3C/svg%3E">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Nosso CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="app-container">
+    <!-- Cabeçalho com a Logo -->
+    <header class="app-header">
+        <div class="logo-container">
+            <!-- Substitua 'logo.jpg' pelo nome do arquivo que você salvou -->
+            <img src="logo.jpg" alt="AcessMap - A acessibilidade é um direito, não um favor." class="app-logo">
+        </div>
+    </header>
+
+    <!-- Área Principal (Views) -->
+    <main id="main-content">
+        <!-- VIEW: MAPA -->
+        <section id="view-map" class="view active" aria-label="Mapa de Acessibilidade">
+            <div id="map"></div>
+            <button id="locate-btn" class="fab-btn" title="Minha Localização" aria-label="Centralizar no meu local">
+                <i class="fa-solid fa-crosshairs"></i>
+            </button>
+            <div class="map-legend">
+                <span><i class="fa-solid fa-wheelchair" style="color: #0066FF;"></i> Local Acessível</span>
+            </div>
+        </section>
+
+        <!-- VIEW: FÓRUM -->
+        <section id="view-forum" class="view" aria-label="Fórum de Reclamações">
+            <div class="forum-container">
+                <div class="section-title">
+                    <h2>Fórum de Reclamações</h2>
+                    <p>Relate problemas de acessibilidade na sua cidade.</p>
+                </div>
+                
+                <div class="card new-post-card" id="new-post-area" style="display: none;">
+                    <textarea id="post-content" placeholder="Descreva o problema (ex: rampa quebrada, falta de corrimão...)"></textarea>
+                    <button class="btn btn-primary" onclick="addPost()">
+                        <i class="fa-solid fa-paper-plane"></i> Publicar Reclamação
+                    </button>
+                </div>
+                
+                <div class="card login-warning" id="login-warning">
+                    <i class="fa-solid fa-lock"></i>
+                    <p>Faça login para postar uma reclamação.</p>
+                    <button class="btn btn-outline" onclick="switchView('login')">Fazer Login</button>
+                </div>
+
+                <div id="posts-list" class="posts-list"></div>
+            </div>
+        </section>
+
+        <!-- VIEW: LOGIN / PERFIL -->
+        <section id="view-login" class="view" aria-label="Área do Usuário">
+            <div class="login-container">
+                <div id="login-form-container" class="card">
+                    <h2>Acessar o Sistema</h2>
+                    <p class="subtitle">Identifique-se para participar do fórum.</p>
+                    <div class="input-group">
+                        <label for="username">Nome de Usuário</label>
+                        <input type="text" id="username" placeholder="Digite seu nome ou apelido" autocomplete="off">
+                    </div>
+                    <button class="btn btn-primary" onclick="login()">
+                        <i class="fa-solid fa-right-to-bracket"></i> Entrar
+                    </button>
+                </div>
+
+                <div id="profile-container" class="card" style="display: none;">
+                    <div class="user-avatar">
+                        <i class="fa-solid fa-circle-user"></i>
+                    </div>
+                    <h3 id="profile-name">Usuário</h3>
+                    <p class="user-status">Cidadão Conectado</p>
+                    <button class="btn btn-danger" onclick="logout()">
+                        <i class="fa-solid fa-right-from-bracket"></i> Sair da Conta
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Barra de Navegação Inferior -->
+    <nav class="bottom-nav" role="navigation">
+        <button class="nav-item active" onclick="switchView('map', this)" aria-label="Mapa">
+            <i class="fa-solid fa-map-location-dot"></i>
+            <span>Mapa</span>
+        </button>
+        <button class="nav-item" onclick="switchView('forum', this)" aria-label="Fórum">
+            <i class="fa-solid fa-comments"></i>
+            <span>Fórum</span>
+        </button>
+        <button class="nav-item" onclick="switchView('login', this)" aria-label="Perfil">
+            <i class="fa-solid fa-user"></i>
+            <span id="nav-login-text">Login</span>
+        </button>
+    </nav>
+
+    <div id="toast-container" class="toast-container"></div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
