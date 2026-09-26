@@ -12,77 +12,11 @@
 <body>
 
 <div id="app-container">
-  <!-- HEADER COM LOGO ADAPTATIVA (SVG) -->
+  <!-- HEADER COM LOGO MESCLADA -->
   <header class="app-header">
     <div class="header-glow"></div>
-
-    <div class="logo-svg-wrapper">
-      <svg class="logo-svg" viewBox="0 0 400 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="AcessMap - A acessibilidade é um direito, não um favor">
-        <defs>
-          <linearGradient id="lgMapBlue" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#0066FF"/>
-            <stop offset="100%" stop-color="#00A6FF"/>
-          </linearGradient>
-          <linearGradient id="lgMapGreen" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#00C46A"/>
-            <stop offset="100%" stop-color="#00A859"/>
-          </linearGradient>
-          <linearGradient id="lgMapYellow" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#FFE24D"/>
-            <stop offset="100%" stop-color="#FFC400"/>
-          </linearGradient>
-          <radialGradient id="lgPinShine" cx="35%" cy="30%" r="60%">
-            <stop offset="0%" stop-color="#FFFFFF" stop-opacity="1"/>
-            <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
-          </radialGradient>
-        </defs>
-
-        <!-- MAPA 3D -->
-        <g stroke="currentColor" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round">
-          <path d="M 60 178 L 145 160 L 190 170 L 190 205 L 145 195 L 60 213 Z" fill="url(#lgMapBlue)"/>
-          <path d="M 190 170 L 265 158 L 340 176 L 340 211 L 265 193 L 190 205 Z" fill="url(#lgMapGreen)"/>
-          <path d="M 265 193 L 340 211 L 340 228 L 265 210 Z" fill="url(#lgMapYellow)"/>
-        </g>
-
-        <!-- CADEIRA DE RODAS -->
-        <g>
-          <circle cx="130" cy="145" r="34" fill="none" stroke="currentColor" stroke-width="8"/>
-          <circle cx="235" cy="182" r="7" fill="currentColor"/>
-          <g fill="currentColor">
-            <circle cx="165" cy="70" r="15"/>
-            <path d="M 155 88 L 175 88 L 175 122 L 155 122 Z"/>
-            <rect x="173" y="100" width="30" height="11" rx="5"/>
-            <rect x="148" y="122" width="62" height="14" rx="5"/>
-            <rect x="198" y="130" width="14" height="44" rx="4"/>
-            <rect x="195" y="168" width="32" height="10" rx="5"/>
-          </g>
-        </g>
-
-        <!-- PIN DE LOCALIZAÇÃO -->
-        <path d="M 285 25 C 262 25 245 42 245 65 C 245 95 285 125 285 125 C 285 125 325 95 325 65 C 325 42 308 25 285 25 Z" fill="currentColor"/>
-        <circle cx="285" cy="65" r="13" fill="#0066FF"/>
-        <circle cx="281" cy="61" r="3.5" fill="url(#lgPinShine)"/>
-
-        <!-- TEXTO: AcessMap -->
-        <text x="200" y="285" text-anchor="middle"
-              font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
-              font-size="54" font-weight="800" letter-spacing="-1.5">
-          <tspan fill="currentColor">Acess</tspan><tspan fill="#0066FF">Map</tspan>
-        </text>
-
-        <!-- SLOGAN -->
-        <text x="200" y="315" text-anchor="middle"
-              font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
-              font-size="13" font-weight="500" font-style="italic"
-              fill="currentColor" opacity="0.72">
-          A acessibilidade é um direito, não um favor.
-        </text>
-      </svg>
-    </div>
-
-    <button class="settings-btn" onclick="openSettings()" aria-label="Configurações">
-      <i class="fa-solid fa-gear"></i>
-    </button>
+    <img src="logo.jpg" alt="AcessMap" class="app-logo">
+    <button class="settings-btn" onclick="openSettings()"><i class="fa-solid fa-gear"></i></button>
   </header>
 
   <main id="main-content">
@@ -91,6 +25,7 @@
     <section id="view-map" class="view active">
       <div id="map"></div>
 
+      <!-- TOOLBAR LATERAL DE BOTÕES DO MAPA -->
       <div class="map-toolbar">
         <button class="tool-btn" onclick="locateMe()" title="Minha Localização"><i class="fa-solid fa-crosshairs"></i></button>
         <button class="tool-btn" onclick="toggleFilterPanel()" title="Filtros"><i class="fa-solid fa-filter"></i></button>
@@ -101,6 +36,7 @@
         <button class="tool-btn danger" onclick="emergencyCall()" title="Emergência"><i class="fa-solid fa-phone"></i></button>
       </div>
 
+      <!-- PAINEL DE FILTROS -->
       <div id="filter-panel" class="filter-panel">
         <h4><i class="fa-solid fa-layer-group"></i> Camadas do Mapa</h4>
         <label class="filter-item"><input type="checkbox" checked data-filter="rampa" onchange="applyFilters()"><i class="fa-solid fa-person-cane" style="color:#00A859"></i> Rampas</label>
@@ -113,6 +49,7 @@
         <label class="filter-item"><input type="checkbox" checked data-filter="rua" onchange="applyFilters()"><i class="fa-solid fa-road" style="color:#A0AEC0"></i> Nomes de Ruas</label>
       </div>
 
+      <!-- LEGENDA -->
       <div class="map-legend">
         <span><i class="fa-solid fa-circle" style="color:#00A859"></i> Bom</span>
         <span><i class="fa-solid fa-circle" style="color:#FFD700"></i> Atenção</span>
@@ -270,6 +207,7 @@
     </section>
   </main>
 
+  <!-- NAVEGAÇÃO INFERIOR -->
   <nav class="bottom-nav">
     <button class="nav-item active" onclick="switchView('map',this)"><i class="fa-solid fa-map-location-dot"></i><span>Mapa</span></button>
     <button class="nav-item" onclick="switchView('onibus',this)"><i class="fa-solid fa-bus"></i><span>Ônibus</span></button>
@@ -278,6 +216,7 @@
     <button class="nav-item" onclick="switchView('login',this)"><i class="fa-solid fa-user"></i><span id="nav-login-txt">Perfil</span></button>
   </nav>
 
+  <!-- MODAL CONFIGURAÇÕES -->
   <div id="settings-modal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
@@ -308,6 +247,7 @@
     </div>
   </div>
 
+  <!-- MODAL DENÚNCIA RÁPIDA -->
   <div id="quick-modal" class="modal">
     <div class="modal-content">
       <div class="modal-header"><h2><i class="fa-solid fa-triangle-exclamation"></i> Denúncia Rápida</h2><button class="close-btn" onclick="closeQuickReport()">&times;</button></div>
