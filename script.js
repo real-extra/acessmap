@@ -1,10 +1,82 @@
 // ==========================================
-// 1. CONFIGURAÇÃO DO MAPA E DADOS
+// 1. CONFIGURAÇÕES DE ACESSIBILIDADE
 // ==========================================
 let map;
 let currentUser = localStorage.getItem('acessmap_user');
 let userLocationMarker = null;
+let darkTileLayer, lightTileLayer;
 
+// Carregar preferências salvas
+function loadSettings() {
+    const theme = localStorage.getItem('acessmap_theme') || 'dark';
+    const fontSize = localStorage.getItem('acessmap_fontsize') || 'normal';
+    const contrast = localStorage.getItem('acessmap_contrast') === 'true';
+    const reading = localStorage.getItem('acessmap_reading') === 'true';
+
+    setTheme(theme, false);
+    setFontSize(fontSize, false);
+    if (contrast) toggleHighContrast(false);
+    if (reading) toggleReadingMode(false);
+}
+
+// Tema (Claro/Escuro)
+function setTheme(theme, save = true) {
+    document.body.setAttribute('data-theme', theme);
+    if (save) localStorage.setItem('acessmap_theme', theme);
+    
+    // Atualiza botões ativos no modal
+    document.querySelectorAll('.toggle-btn[data-theme]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.theme === theme);
+    });
+
+    // Troca o tile do mapa
+    if (map) {
+        if (theme === 'light' && lightTileLayer) {
+            map.removeLayer(darkTileLayer);
+            lightTileLayer.addTo(map);
+        } else if (theme === 'dark' && darkTileLayer) {
+            map.removeLayer(lightTileLayer);
+            darkTileLayer.addTo(map);
+        }
+    }
+}
+
+// Tamanho da Fonte
+function setFontSize(size, save = true) {
+    document.body.classList.remove('font-large', 'font-xlarge');
+    if (size === 'large') document.body.classList.add('font-large');
+    if (size === 'xlarge') document.body.classList.add('font-xlarge');
+    
+    if (save) localStorage.setItem('acessmap_fontsize', size);
+    
+    document.querySelectorAll('.toggle-btn[data-font]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.font === size);
+    });
+}
+
+// Alto Contraste
+function toggleHighContrast(save = true) {
+    const isActive = document.body.classList.toggle('high-contrast');
+    if (save) localStorage.setItem('acessmap_contrast', isActive);
+    document.getElementById('contrast-toggle').innerText = isActive ? 'Desativar' : 'Ativar';
+    document.getElementById('contrast-toggle').classList.toggle('btn-primary', isActive);
+}
+
+// Modo Leitura Fácil
+function toggleReadingMode(save = true) {
+    const isActive = document.body.classList.toggle('reading-mode');
+    if (save) localStorage.setItem('acessmap_reading', isActive);
+    document.getElementById('reading-toggle').innerText = isActive ? 'Desativar' : 'Ativar';
+    document.getElementById('reading-toggle').classList.toggle('btn-primary', isActive);
+}
+
+// Abrir/Fechar Modal
+function openSettings() { document.getElementById('settings-modal').classList.add('active'); }
+function closeSettings() { document.getElementById('settings-modal').classList.remove('active'); }
+
+// ==========================================
+// 2. CONFIGURAÇÃO DO MAPA E DADOS
+// ==========================================
 let posts = JSON.parse(localStorage.getItem('acessmap_posts')) || [
     { id: 1, author: 'Administração', content: 'Bem-vindo ao canal oficial de reclamações do AcessMap. Utilize este espaço para relatar problemas de infraestrutura urbana que afetem a acessibilidade.', date: 'Hoje', isOfficial: true },
     { id: 2, author: 'Carlos Silva', content: 'A rampa de acesso da estação central está com o corrimão solto. Perigoso para cadeirantes e idosos.', date: 'Ontem', isOfficial: false }
@@ -17,58 +89,56 @@ const accessiblePlaces = [
     { lat: -23.5450, lng: -46.6400, title: "Museu da Língua Portuguesa", desc: "Elevadores e banheiros adaptados." }
 ];
 
-// Inicializa o Mapa
 function initMap() {
     map = L.map('map', { zoomControl: false }).setView([-23.5505, -46.6333], 14);
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; OpenStreetMap &copy; CARTO',
-        subdomains: 'abcd',
-        maxZoom: 20
-    }).addTo(map);
+    // Tile Layers (Escuro e Claro)
+    darkTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap &copy; CARTO', subdomains: 'abcd', maxZoom: 20
+    });
+
+    lightTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap &copy; CARTO', subdomains: 'abcd', maxZoom: 20
+    });
+
+    // Define o tile inicial baseado no tema salvo
+    const currentTheme = document.body.getAttribute('data-theme');
+    if (currentTheme === 'light') lightTileLayer.addTo(map);
+    else darkTileLayer.addTo(map);
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-    // Ícone customizado baseado na logo (SVG)
     const customIcon = L.divIcon({
         className: 'custom-div-icon',
         html: `
             <div style="position: relative; width: 40px; height: 50px;">
-                <!-- Pino Azul -->
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#0066FF" style="filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.5)); width: 40px; height: 50px;">
                     <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                 </svg>
-                <!-- Ícone da Cadeira de Rodas Branco -->
                 <div style="position: absolute; top: 8px; left: 0; width: 100%; text-align: center; color: white; font-size: 14px;">
                     <i class="fa-solid fa-wheelchair"></i>
                 </div>
             </div>
         `,
-        iconSize: [40, 50],
-        iconAnchor: [20, 50],
-        popupAnchor: [0, -45]
+        iconSize: [40, 50], iconAnchor: [20, 50], popupAnchor: [0, -45]
     });
 
     accessiblePlaces.forEach(place => {
         L.marker([place.lat, place.lng], { icon: customIcon })
             .addTo(map)
-            .bindPopup(`<b>${place.title}</b><br><span style="font-size:12px; color:#A0AEC0;">${place.desc}</span>`);
+            .bindPopup(`<b>${place.title}</b><br><span style="font-size:12px; color:var(--text-gray);">${place.desc}</span>`);
     });
 }
 
 // Botão de Localização
 document.getElementById('locate-btn').addEventListener('click', () => {
-    if (!navigator.geolocation) {
-        showToast('Geolocalização não suportada.', 'error');
-        return;
-    }
+    if (!navigator.geolocation) return showToast('Geolocalização não suportada.', 'error');
     showToast('Buscando sua localização...', 'warning');
 
     navigator.geolocation.getCurrentPosition(
         (position) => {
             const { latitude, longitude } = position.coords;
             if (userLocationMarker) map.removeLayer(userLocationMarker);
-
             userLocationMarker = L.marker([latitude, longitude], {
                 icon: L.divIcon({
                     className: 'user-location',
@@ -76,7 +146,6 @@ document.getElementById('locate-btn').addEventListener('click', () => {
                     iconSize: [20, 20], iconAnchor: [10, 10]
                 })
             }).addTo(map).bindPopup('Você está aqui').openPopup();
-
             map.setView([latitude, longitude], 16);
             showToast('Localização encontrada!', 'success');
         },
@@ -84,9 +153,8 @@ document.getElementById('locate-btn').addEventListener('click', () => {
     );
 });
 
-
 // ==========================================
-// 2. NAVEGAÇÃO E INTERFACE
+// 3. NAVEGAÇÃO E INTERFACE
 // ==========================================
 function switchView(viewName, navElement = null) {
     document.querySelectorAll('.view').forEach(view => view.classList.remove('active'));
@@ -98,7 +166,6 @@ function switchView(viewName, navElement = null) {
         const index = viewName === 'map' ? 0 : viewName === 'forum' ? 1 : 2;
         document.querySelectorAll('.nav-item')[index].classList.add('active');
     }
-
     if (viewName === 'map' && map) setTimeout(() => { map.invalidateSize(); }, 150);
 }
 
@@ -115,9 +182,8 @@ function showToast(message, type = 'info') {
     }, 3000);
 }
 
-
 // ==========================================
-// 3. LOGIN
+// 4. LOGIN E FÓRUM
 // ==========================================
 function checkLoginState() {
     const loginForm = document.getElementById('login-form-container');
@@ -127,18 +193,14 @@ function checkLoginState() {
     const loginWarning = document.getElementById('login-warning');
 
     if (currentUser) {
-        loginForm.style.display = 'none';
-        profileContainer.style.display = 'block';
+        loginForm.style.display = 'none'; profileContainer.style.display = 'block';
         document.getElementById('profile-name').innerText = currentUser;
         navLoginText.innerText = 'Perfil';
-        newPostArea.style.display = 'block';
-        loginWarning.style.display = 'none';
+        newPostArea.style.display = 'block'; loginWarning.style.display = 'none';
     } else {
-        loginForm.style.display = 'block';
-        profileContainer.style.display = 'none';
+        loginForm.style.display = 'block'; profileContainer.style.display = 'none';
         navLoginText.innerText = 'Login';
-        newPostArea.style.display = 'none';
-        loginWarning.style.display = 'block';
+        newPostArea.style.display = 'none'; loginWarning.style.display = 'block';
     }
 }
 
@@ -161,10 +223,6 @@ function logout() {
     switchView('login');
 }
 
-
-// ==========================================
-// 4. FÓRUM
-// ==========================================
 function renderPosts() {
     const postsList = document.getElementById('posts-list');
     postsList.innerHTML = '';
@@ -197,7 +255,11 @@ function addPost() {
     showToast('Reclamação publicada!', 'success');
 }
 
+// ==========================================
+// 5. INICIALIZAÇÃO
+// ==========================================
 window.onload = () => {
+    loadSettings(); // Carrega tema, fonte, etc. ANTES de tudo
     initMap();
     checkLoginState();
     renderPosts();
