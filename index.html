@@ -1,153 +1,265 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AcessMap - Acessibilidade é um direito</title>
-    
-    <!-- Favicon SVG -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230066FF'/%3E%3Cpath d='M50 20a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM35 45v20h10v25h10V65h10V45H35z' fill='white'/%3E%3C/svg%3E">
-    
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Nosso CSS -->
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>AcessMap - Portal do Cadeirante</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230066FF'/%3E%3Cpath d='M50 20a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM35 45v20h10v25h10V65h10V45H35z' fill='white'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div id="app-container">
-    <!-- Cabeçalho com a Logo e Botão de Configurações -->
-    <header class="app-header">
-        <div class="logo-container">
-            <!-- Substitua 'logo.jpg' pelo nome do arquivo que você salvou -->
-            <img src="logo.jpg" alt="AcessMap" class="app-logo">
+  <!-- HEADER COM LOGO MESCLADA -->
+  <header class="app-header">
+    <div class="header-glow"></div>
+    <img src="logo.jpg" alt="AcessMap" class="app-logo">
+    <button class="settings-btn" onclick="openSettings()"><i class="fa-solid fa-gear"></i></button>
+  </header>
+
+  <main id="main-content">
+
+    <!-- ============ MAPA ============ -->
+    <section id="view-map" class="view active">
+      <div id="map"></div>
+
+      <!-- TOOLBAR LATERAL DE BOTÕES DO MAPA -->
+      <div class="map-toolbar">
+        <button class="tool-btn" onclick="locateMe()" title="Minha Localização"><i class="fa-solid fa-crosshairs"></i></button>
+        <button class="tool-btn" onclick="toggleFilterPanel()" title="Filtros"><i class="fa-solid fa-filter"></i></button>
+        <button class="tool-btn" onclick="toggleLayer()" title="Satélite/Ruas"><i class="fa-solid fa-layer-group"></i></button>
+        <button class="tool-btn" onclick="openQuickReport()" title="Denúncia Rápida"><i class="fa-solid fa-triangle-exclamation"></i></button>
+        <button class="tool-btn" onclick="showFavorites()" title="Meus Favoritos"><i class="fa-solid fa-star"></i></button>
+        <button class="tool-btn" onclick="shareLocation()" title="Compartilhar Local"><i class="fa-solid fa-share-nodes"></i></button>
+        <button class="tool-btn danger" onclick="emergencyCall()" title="Emergência"><i class="fa-solid fa-phone"></i></button>
+      </div>
+
+      <!-- PAINEL DE FILTROS -->
+      <div id="filter-panel" class="filter-panel">
+        <h4><i class="fa-solid fa-layer-group"></i> Camadas do Mapa</h4>
+        <label class="filter-item"><input type="checkbox" checked data-filter="rampa" onchange="applyFilters()"><i class="fa-solid fa-person-cane" style="color:#00A859"></i> Rampas</label>
+        <label class="filter-item"><input type="checkbox" checked data-filter="onibus" onchange="applyFilters()"><i class="fa-solid fa-bus" style="color:#FFD700"></i> Paradas de Ônibus</label>
+        <label class="filter-item"><input type="checkbox" checked data-filter="banheiro" onchange="applyFilters()"><i class="fa-solid fa-restroom" style="color:#0066FF"></i> Banheiros PCD</label>
+        <label class="filter-item"><input type="checkbox" checked data-filter="elevador" onchange="applyFilters()"><i class="fa-solid fa-elevator" style="color:#8B5CF6"></i> Elevadores</label>
+        <label class="filter-item"><input type="checkbox" checked data-filter="vaga" onchange="applyFilters()"><i class="fa-solid fa-square-parking" style="color:#0EA5E9"></i> Vagas PCD</label>
+        <label class="filter-item"><input type="checkbox" checked data-filter="semaforo" onchange="applyFilters()"><i class="fa-solid fa-traffic-light" style="color:#F97316"></i> Semáforos Sonoros</label>
+        <label class="filter-item"><input type="checkbox" checked data-filter="zona" onchange="applyFilters()"><i class="fa-solid fa-draw-polygon" style="color:#E52207"></i> Zonas (Boa/Ruim)</label>
+        <label class="filter-item"><input type="checkbox" checked data-filter="rua" onchange="applyFilters()"><i class="fa-solid fa-road" style="color:#A0AEC0"></i> Nomes de Ruas</label>
+      </div>
+
+      <!-- LEGENDA -->
+      <div class="map-legend">
+        <span><i class="fa-solid fa-circle" style="color:#00A859"></i> Bom</span>
+        <span><i class="fa-solid fa-circle" style="color:#FFD700"></i> Atenção</span>
+        <span><i class="fa-solid fa-circle" style="color:#E52207"></i> Ruim</span>
+      </div>
+    </section>
+
+    <!-- ============ ÔNIBUS ============ -->
+    <section id="view-onibus" class="view">
+      <div class="page">
+        <div class="page-title">
+          <h2><i class="fa-solid fa-bus"></i> Ônibus Acessíveis</h2>
+          <p>Consulte linhas, paradas e veículos com rampa.</p>
         </div>
-        <button class="settings-btn" onclick="openSettings()" aria-label="Configurações">
-            <i class="fa-solid fa-gear"></i>
-        </button>
-    </header>
 
-    <!-- Área Principal (Views) -->
-    <main id="main-content">
-        <!-- VIEW: MAPA -->
-        <section id="view-map" class="view active" aria-label="Mapa de Acessibilidade">
-            <div id="map"></div>
-            <button id="locate-btn" class="fab-btn" title="Minha Localização" aria-label="Centralizar no meu local">
-                <i class="fa-solid fa-crosshairs"></i>
-            </button>
-            <div class="map-legend">
-                <span><i class="fa-solid fa-wheelchair" style="color: #0066FF;"></i> Local Acessível</span>
-            </div>
-        </section>
-
-        <!-- VIEW: FÓRUM -->
-        <section id="view-forum" class="view" aria-label="Fórum de Reclamações">
-            <div class="forum-container">
-                <div class="section-title">
-                    <h2>Fórum de Reclamações</h2>
-                    <p>Relate problemas de acessibilidade na sua cidade.</p>
-                </div>
-                
-                <div class="card new-post-card" id="new-post-area" style="display: none;">
-                    <textarea id="post-content" placeholder="Descreva o problema (ex: rampa quebrada, falta de corrimão...)"></textarea>
-                    <button class="btn btn-primary" onclick="addPost()">
-                        <i class="fa-solid fa-paper-plane"></i> Publicar Reclamação
-                    </button>
-                </div>
-                
-                <div class="card login-warning" id="login-warning">
-                    <i class="fa-solid fa-lock"></i>
-                    <p>Faça login para postar uma reclamação.</p>
-                    <button class="btn btn-outline" onclick="switchView('login')">Fazer Login</button>
-                </div>
-
-                <div id="posts-list" class="posts-list"></div>
-            </div>
-        </section>
-
-        <!-- VIEW: LOGIN / PERFIL -->
-        <section id="view-login" class="view" aria-label="Área do Usuário">
-            <div class="login-container">
-                <div id="login-form-container" class="card">
-                    <h2>Acessar o Sistema</h2>
-                    <p class="subtitle">Identifique-se para participar do fórum.</p>
-                    <div class="input-group">
-                        <label for="username">Nome de Usuário</label>
-                        <input type="text" id="username" placeholder="Digite seu nome ou apelido" autocomplete="off">
-                    </div>
-                    <button class="btn btn-primary" onclick="login()">
-                        <i class="fa-solid fa-right-to-bracket"></i> Entrar
-                    </button>
-                </div>
-
-                <div id="profile-container" class="card" style="display: none;">
-                    <div class="user-avatar">
-                        <i class="fa-solid fa-circle-user"></i>
-                    </div>
-                    <h3 id="profile-name">Usuário</h3>
-                    <p class="user-status">Cidadão Conectado</p>
-                    <button class="btn btn-danger" onclick="logout()">
-                        <i class="fa-solid fa-right-from-bracket"></i> Sair da Conta
-                    </button>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Barra de Navegação Inferior -->
-    <nav class="bottom-nav" role="navigation">
-        <button class="nav-item active" onclick="switchView('map', this)" aria-label="Mapa">
-            <i class="fa-solid fa-map-location-dot"></i>
-            <span>Mapa</span>
-        </button>
-        <button class="nav-item" onclick="switchView('forum', this)" aria-label="Fórum">
-            <i class="fa-solid fa-comments"></i>
-            <span>Fórum</span>
-        </button>
-        <button class="nav-item" onclick="switchView('login', this)" aria-label="Perfil">
-            <i class="fa-solid fa-user"></i>
-            <span id="nav-login-text">Login</span>
-        </button>
-    </nav>
-
-    <!-- Modal de Configurações -->
-    <div id="settings-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2><i class="fa-solid fa-sliders"></i> Acessibilidade</h2>
-                <button class="close-btn" onclick="closeSettings()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="setting-item">
-                    <label>Tema do Aplicativo</label>
-                    <div class="btn-group">
-                        <button class="toggle-btn active" data-theme="dark" onclick="setTheme('dark')">Escuro</button>
-                        <button class="toggle-btn" data-theme="light" onclick="setTheme('light')">Claro</button>
-                    </div>
-                </div>
-                <div class="setting-item">
-                    <label>Tamanho do Texto</label>
-                    <div class="btn-group">
-                        <button class="toggle-btn active" data-font="normal" onclick="setFontSize('normal')">A</button>
-                        <button class="toggle-btn" data-font="large" onclick="setFontSize('large')" style="font-size: 1.2em;">A</button>
-                        <button class="toggle-btn" data-font="xlarge" onclick="setFontSize('xlarge')" style="font-size: 1.4em;">A</button>
-                    </div>
-                </div>
-                <div class="setting-item">
-                    <label>Alto Contraste</label>
-                    <button id="contrast-toggle" class="btn btn-outline" onclick="toggleHighContrast()">Ativar</button>
-                </div>
-                <div class="setting-item">
-                    <label>Modo Leitura Fácil</label>
-                    <button id="reading-toggle" class="btn btn-outline" onclick="toggleReadingMode()">Ativar</button>
-                </div>
-            </div>
+        <div class="search-bar">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input id="busca-onibus" placeholder="Buscar linha, bairro ou parada..." oninput="renderOnibus()">
         </div>
+
+        <div class="chip-row">
+          <button class="chip active" data-f="todos" onclick="setBusFilter('todos',this)">Todos</button>
+          <button class="chip" data-f="rampa" onclick="setBusFilter('rampa',this)">Com Rampa</button>
+          <button class="chip" data-f="piso" onclick="setBusFilter('piso',this)">Piso Baixo</button>
+          <button class="chip" data-f="ar" onclick="setBusFilter('ar',this)">Com Ar</button>
+          <button class="chip" data-f="wifi" onclick="setBusFilter('wifi',this)">Com Wi-Fi</button>
+        </div>
+
+        <div id="lista-onibus" class="bus-list"></div>
+      </div>
+    </section>
+
+    <!-- ============ FÓRUM ============ -->
+    <section id="view-forum" class="view">
+      <div class="page">
+        <div class="page-title">
+          <h2><i class="fa-solid fa-comments"></i> Fórum da Comunidade</h2>
+          <p>Converse, tire dúvidas e compartilhe experiências.</p>
+        </div>
+
+        <div class="card" id="forum-new" style="display:none">
+          <div class="input-group">
+            <label>Categoria</label>
+            <select id="forum-cat" class="input-field">
+              <option value="geral">Geral</option>
+              <option value="duvida">Dúvida</option>
+              <option value="dica">Dica de Acessibilidade</option>
+              <option value="experiencia">Relato de Experiência</option>
+              <option value="produto">Produtos e Equipamentos</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>Título</label>
+            <input id="forum-titulo" class="input-field" placeholder="Título do tópico">
+          </div>
+          <textarea id="forum-content" class="input-field" style="height:90px" placeholder="Escreva sua mensagem..."></textarea>
+          <button class="btn btn-primary" onclick="addForumPost()"><i class="fa-solid fa-paper-plane"></i> Publicar</button>
+        </div>
+
+        <div class="card login-warning" id="forum-warn">
+          <i class="fa-solid fa-lock"></i>
+          <p>Faça login para participar do fórum.</p>
+          <button class="btn btn-outline" onclick="switchView('login')">Entrar</button>
+        </div>
+
+        <div id="forum-list" class="posts-list"></div>
+      </div>
+    </section>
+
+    <!-- ============ DENÚNCIAS ============ -->
+    <section id="view-denuncias" class="view">
+      <div class="page">
+        <div class="page-title">
+          <h2><i class="fa-solid fa-bullhorn"></i> Canal de Denúncias</h2>
+          <p>Envie problemas de acessibilidade aos órgãos públicos.</p>
+        </div>
+
+        <div class="card">
+          <div class="input-group">
+            <label>Categoria</label>
+            <select id="den-cat" class="input-field">
+              <option value="rampa">Rampa Quebrada / Inexistente</option>
+              <option value="calcada">Calçada Danificada / Sem Rebaixamento</option>
+              <option value="onibus">Ônibus Sem Acessibilidade</option>
+              <option value="elevador">Elevador Fora de Serviço</option>
+              <option value="banheiro">Banheiro PCD Inadequado</option>
+              <option value="sinalizacao">Falta de Sinalização</option>
+              <option value="obstaculo">Obstáculo na Calçada</option>
+              <option value="outro">Outro</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>Local / Endereço</label>
+            <input id="den-local" class="input-field" placeholder="Ex: Rua das Acácias, 120 - Centro">
+          </div>
+          <div class="input-group">
+            <label>Prioridade</label>
+            <div class="priority-row">
+              <button class="priority-btn" data-p="baixa" onclick="setPriority('baixa',this)">Baixa</button>
+              <button class="priority-btn active" data-p="media" onclick="setPriority('media',this)">Média</button>
+              <button class="priority-btn" data-p="alta" onclick="setPriority('alta',this)">Alta</button>
+            </div>
+          </div>
+          <div class="input-group">
+            <label>Descrição Detalhada</label>
+            <textarea id="den-desc" class="input-field" style="height:100px" placeholder="Descreva o problema com detalhes..."></textarea>
+          </div>
+          <div class="input-group">
+            <label>Foto (opcional)</label>
+            <input type="file" id="den-foto" accept="image/*" class="input-field file-input">
+          </div>
+          <button class="btn btn-primary" onclick="enviarDenuncia()"><i class="fa-solid fa-paper-plane"></i> Enviar Denúncia</button>
+          <p class="protocol-note"><i class="fa-solid fa-circle-info"></i> Você receberá um protocolo de acompanhamento.</p>
+        </div>
+
+        <h3 class="sub-title"><i class="fa-solid fa-list-check"></i> Minhas Denúncias</h3>
+        <div id="denuncias-list" class="posts-list"></div>
+      </div>
+    </section>
+
+    <!-- ============ PERFIL ============ -->
+    <section id="view-login" class="view">
+      <div class="login-container">
+        <div id="login-form" class="card">
+          <h2>Acessar o Portal</h2>
+          <p class="subtitle">Identifique-se para participar.</p>
+          <div class="input-group">
+            <label>Nome de Usuário</label>
+            <input id="username" class="input-field" placeholder="Nome ou apelido" autocomplete="off">
+          </div>
+          <div class="input-group">
+            <label>Tipo de Perfil</label>
+            <select id="user-tipo" class="input-field">
+              <option value="cadeirante">Cadeirante</option>
+              <option value="cuidador">Cuidador / Acompanhante</option>
+              <option value="fiscal">Fiscal / Gestor Público</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" onclick="login()"><i class="fa-solid fa-right-to-bracket"></i> Entrar</button>
+        </div>
+
+        <div id="profile" class="card" style="display:none">
+          <div class="user-avatar"><i class="fa-solid fa-circle-user"></i></div>
+          <h3 id="profile-name">Usuário</h3>
+          <p class="user-status" id="profile-tipo">Cadeirante</p>
+          <div class="stats-grid">
+            <div class="stat-card"><strong id="stat-forum">0</strong><span>Posts</span></div>
+            <div class="stat-card"><strong id="stat-den">0</strong><span>Denúncias</span></div>
+            <div class="stat-card"><strong id="stat-fav">0</strong><span>Favoritos</span></div>
+            <div class="stat-card"><strong id="stat-like">0</strong><span>Curtidas</span></div>
+          </div>
+          <button class="btn btn-danger" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- NAVEGAÇÃO INFERIOR -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="switchView('map',this)"><i class="fa-solid fa-map-location-dot"></i><span>Mapa</span></button>
+    <button class="nav-item" onclick="switchView('onibus',this)"><i class="fa-solid fa-bus"></i><span>Ônibus</span></button>
+    <button class="nav-item" onclick="switchView('forum',this)"><i class="fa-solid fa-comments"></i><span>Fórum</span></button>
+    <button class="nav-item" onclick="switchView('denuncias',this)"><i class="fa-solid fa-bullhorn"></i><span>Denúncia</span></button>
+    <button class="nav-item" onclick="switchView('login',this)"><i class="fa-solid fa-user"></i><span id="nav-login-txt">Perfil</span></button>
+  </nav>
+
+  <!-- MODAL CONFIGURAÇÕES -->
+  <div id="settings-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class="fa-solid fa-sliders"></i> Acessibilidade</h2>
+        <button class="close-btn" onclick="closeSettings()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="setting-item">
+          <label>Tema</label>
+          <div class="btn-group">
+            <button class="toggle-btn active" data-theme="dark" onclick="setTheme('dark')">Escuro</button>
+            <button class="toggle-btn" data-theme="light" onclick="setTheme('light')">Claro</button>
+          </div>
+        </div>
+        <div class="setting-item">
+          <label>Tamanho do Texto</label>
+          <div class="btn-group">
+            <button class="toggle-btn active" data-font="normal" onclick="setFontSize('normal')">A</button>
+            <button class="toggle-btn" data-font="large" onclick="setFontSize('large')" style="font-size:1.2em">A</button>
+            <button class="toggle-btn" data-font="xlarge" onclick="setFontSize('xlarge')" style="font-size:1.4em">A</button>
+          </div>
+        </div>
+        <div class="setting-item"><label>Alto Contraste</label><button id="contrast-toggle" class="btn btn-outline" onclick="toggleContrast()">Ativar</button></div>
+        <div class="setting-item"><label>Modo Leitura Fácil</label><button id="reading-toggle" class="btn btn-outline" onclick="toggleReading()">Ativar</button></div>
+        <div class="setting-item"><label>Alertas Sonoros</label><button id="sound-toggle" class="btn btn-outline" onclick="toggleSound()">Ativar</button></div>
+        <div class="setting-item"><label>Limpar Dados</label><button class="btn btn-danger" onclick="clearData()"><i class="fa-solid fa-trash"></i> Apagar Tudo</button></div>
+      </div>
     </div>
+  </div>
 
-    <div id="toast-container" class="toast-container"></div>
+  <!-- MODAL DENÚNCIA RÁPIDA -->
+  <div id="quick-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header"><h2><i class="fa-solid fa-triangle-exclamation"></i> Denúncia Rápida</h2><button class="close-btn" onclick="closeQuickReport()">&times;</button></div>
+      <div class="modal-body">
+        <p class="subtitle">Descreva o problema no local atual:</p>
+        <textarea id="quick-desc" class="input-field" style="height:100px" placeholder="Ex: Rampa quebrada com buraco..."></textarea>
+        <button class="btn btn-primary" onclick="sendQuickReport()"><i class="fa-solid fa-paper-plane"></i> Enviar Agora</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
